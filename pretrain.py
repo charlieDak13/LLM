@@ -138,8 +138,9 @@ def main(gpt_config, settings):
     ##############################
 
     file_path = "shakespeare.txt"
-    url = "https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/main/ch02/01_main-chapter-code/the-verdict.txt"
+    # url = "https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/main/ch02/01_main-chapter-code/the-verdict.txt"
     # url = "https://ocw.mit.edu/ans7870/6/6.006/s08/lecturenotes/files/t8.shakespeare.txt"
+    url = "https://raw.githubusercontent.com/charlieDak13/LLM/refs/heads/master/shakespeare.txt"
 
     if not os.path.exists(file_path):
         with urllib.request.urlopen(url) as response:
@@ -190,14 +191,14 @@ def main(gpt_config, settings):
 
     ##############################
     # Train model
-    ##############################
+    ###############################
 
     tokenizer = tiktoken.get_encoding("gpt2")
 
     train_losses, val_losses, tokens_seen = train_model_simple(
         model, train_loader, val_loader, optimizer, device,
-        num_epochs=settings["num_epochs"], eval_freq=5, eval_iter=1,
-        start_context="Every effort moves you", tokenizer=tokenizer
+        num_epochs=settings["num_epochs"], eval_freq=10, eval_iter=1,
+        start_context="Romeo:", tokenizer=tokenizer
     )
 
     return train_losses, val_losses, tokens_seen, model
