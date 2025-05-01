@@ -44,6 +44,11 @@ def create_dataloader_v1(txt, batch_size, max_length, stride,
 with open("shakespeare.txt", "r", encoding="utf-8") as f:
     raw_text = f.read()
 
+with open("sonnets.txt", "r", encoding="utf-8") as sonnet:
+    sonnet_text = sonnet.read()
+
+final_text = raw_text + sonnet_text
+
 vocab_size = 50257
 output_dim = 256
 context_length = 1024
@@ -55,7 +60,7 @@ pos_embedding_layer = torch.nn.Embedding(context_length, output_dim)
 batch_size = 8
 max_length = 4
 dataloader = create_dataloader_v1(
-    raw_text,
+    final_text,
     batch_size=batch_size,
     max_length=max_length,
     stride=max_length

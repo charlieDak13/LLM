@@ -138,9 +138,9 @@ def main(gpt_config, settings):
     ##############################
 
     file_path = "shakespeare.txt"
-    # url = "https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/main/ch02/01_main-chapter-code/the-verdict.txt"
-    # url = "https://ocw.mit.edu/ans7870/6/6.006/s08/lecturenotes/files/t8.shakespeare.txt"
+    file_path2 = "sonnets.txt"
     url = "https://raw.githubusercontent.com/charlieDak13/LLM/refs/heads/master/shakespeare.txt"
+    url2 = "https://raw.githubusercontent.com/charlieDak13/LLM/refs/heads/master/sonnets.txt"
 
     if not os.path.exists(file_path):
         with urllib.request.urlopen(url) as response:
@@ -150,6 +150,18 @@ def main(gpt_config, settings):
     else:
         with open(file_path, "r", encoding="utf-8") as file:
             text_data = file.read()
+
+
+    if not os.path.exists(file_path2):
+        with urllib.request.urlopen(url2) as response:
+            text_data2 = response.read().decode('utf-8')
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(text_data2)
+    else:
+        with open(file_path2, "r", encoding="utf-8") as file:
+            text_data2 = file.read()
+
+    full_data = text_data + text_data2
 
     ##############################
     # Initialize model
@@ -167,10 +179,10 @@ def main(gpt_config, settings):
 
     # Train/validation ratio
     train_ratio = 0.90
-    split_idx = int(train_ratio * len(text_data))
+    split_idx = int(train_ratio * len(full_data))
 
     train_loader = create_dataloader_v1(
-        text_data[:split_idx],
+        full_data[:split_idx],
         batch_size=settings["batch_size"],
         max_length=gpt_config["context_length"],
         stride=gpt_config["context_length"],
@@ -180,7 +192,7 @@ def main(gpt_config, settings):
     )
 
     val_loader = create_dataloader_v1(
-        text_data[split_idx:],
+        full_data[split_idx:],
         batch_size=settings["batch_size"],
         max_length=gpt_config["context_length"],
         stride=gpt_config["context_length"],
@@ -198,7 +210,7 @@ def main(gpt_config, settings):
     train_losses, val_losses, tokens_seen = train_model_simple(
         model, train_loader, val_loader, optimizer, device,
         num_epochs=settings["num_epochs"], eval_freq=10, eval_iter=1,
-        start_context="Romeo:", tokenizer=tokenizer
+        start_context="Romeo ", tokenizer=tokenizer
     )
 
     return train_losses, val_losses, tokens_seen, model
